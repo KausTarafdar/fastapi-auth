@@ -1,0 +1,11 @@
+### TO DO for for the authentication system
+- ~~Design the auth system with roles in mind~~
+- ~~Get the routes and structure in your head~~
+- ~~Add the create user functionality~~
+- Make the JWT creation function
+- Make the Login and Logout route
+- Make dummy item edit routes for CRUD like functionality
+- Add the JWT authentication on the CRUD routes
+- Deploy to render {Do not get fancy and try to deploy on AWS, not rn}
+- Create a README and finish the github
+- Provide the .env file if its necessary
