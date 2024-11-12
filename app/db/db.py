@@ -9,11 +9,4 @@ MONGO_URI = os.getenv('MONGO_URI')
 
 client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
 database = client.get_database('user_db')
-
-def get_database():
-    """
-    Returns the database instance. This can be imported and used
-    in other files to interact with the MongoDB database.
-    """
-    return database
-
+user_collection = database['user']
