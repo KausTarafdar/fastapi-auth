@@ -1,20 +1,37 @@
-from fastapi import FastAPI, APIRouter
+from typing import Annotated
 
-from db.models import NewUser
-from db.db import user_collection
-from core.bcrypt_functions import hash_password
-from utils.response_helpers import success_response, error_response
+from fastapi import Depends, APIRouter
+from fastapi.security import OAuth2PasswordBearer
 
-app = FastAPI()
-router = APIRouter()
+from ..db.models import NewUser, RolesEnum
+from ..db.db import user_collection
+from ..core.bcrypt_functions import hash_password
+from ..core.token import get_user_from_token
+from ..utils.response_helpers import success_response, error_response
+
+router = APIRouter(
+    prefix='/user',
+    tags=['User']
+)
+
+oauth2_schema = OAuth2PasswordBearer(tokenUrl='token')
 
 '''To create a new user with the role permissions'''
-@router.post("/user/")
-async def create_user(user: NewUser):
-    # check if username exists
+@router.post("/new/")
+async def create_user(user: NewUser, token: Annotated[str, Depends(oauth2_schema)]):
+    verify_role = get_user_from_token(token)
+    if not verify_role or verify_role['role'] != RolesEnum.ADMIN:
+        return error_response(
+            error_type="Forbidden",
+            details="Permissions or User authorized",
+            message="This action required privileged role",
+            code=403
+        )
+
+
     valid_email = user_collection.find_one({"email": user.email})
     if valid_email:
-        error_response(
+        return error_response(
             error_type="Conflict",
             details="User Creation Error",
             message="Email already exists",
